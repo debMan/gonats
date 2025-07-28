@@ -1,0 +1,19 @@
+#!/bin/bash
+
+SUBJECTS=("box.ride"  "driver.fakeapps"  "ride.accepted"  "ride.all.enriched.box"  "ride.arrived.first_dest"  "ride.arrived.passenger"  "ride.arrived.second_dest"  "ride.boarded"  "ride.cancel.backoffice"  "ride.cancel.driver"  "ride.cancel.passenger"  "ride.cancel.passenger.new_ride"  "ride.finished"  "ride.flexiprice.start"  "ride.flexiprice.updated"  "ride.nobody_accepted"  "ride.options.hurry_added"  "ride.receipt.changed"  "ride.service_type.changed"  "ride.snappbox"  "ride.started"  "rides_blackbox_exporter"  "shared_ride.accepted"  "shared_ride.arrived_at_first_origin"  "shared_ride.arrived_at_second_origin"  "shared_ride.boarded_at_first_origin"  "shared_ride.boarded_at_second_origin"  "shared_ride.cancel.backoffice"  "shared_ride.cancel.driver"  "shared_ride.cancel.passenger"  "shared_ride.dropped_at_first_destination"  "shared_ride.finished"  "shared_ride.nobody_accepted"  "shared_ride.started"  "snappbox")
+# SUBJECTS=("box.ride")
+SIZE_MB=5
+COUNT=10
+
+# Generate a large message of SIZE_MB MB
+# LARGE_PAYLOAD=$(head -c "$((SIZE_MB * 1024 * 1024))" </dev/urandom | base64 | tr -d '\n')
+LARGE_PAYLOAD=$(head -c "$((SIZE_MB * 1024))" </dev/urandom | base64 | tr -d '\n')
+
+for subject in "${SUBJECTS[@]}"; do
+  echo "Publishing $COUNT messages to subject: $subject"
+  for i in $(seq 1 $COUNT); do
+    nats publish  --count 10 "$subject" "Message {{Count}}: ${LARGE_PAYLOAD}" >/dev/null
+  done
+done
+
+echo "Done."
